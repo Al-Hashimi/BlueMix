@@ -58,8 +58,8 @@ def getContainerLimit(list):
 	list= int(list);
 	cts = swift.containerListLimit(list)
 	j = json.dumps(cts,sort_keys=True)
-# 	return Response(j, mimetype='application/json')
-	return Response(j, mimetype='application/text')
+	return Response(j, mimetype='application/json')
+# 	return Response(j, mimetype='application/text')
 ##########################################################################################
 """
 	create the Container
