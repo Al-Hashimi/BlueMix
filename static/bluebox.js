@@ -47,7 +47,10 @@ function clearSwiftTable(){
  * container table stuff 
  * 
  */
+// var check  ;
+ var currentContainerPageMarker = '';
 function buildContainerTable(){
+	currentContainerPageMarker = '';
 	$("#backBtn").hide()
 	$("#createContainerDiv").show()
 	$("#createContainerForm").show()
@@ -63,7 +66,13 @@ function buildContainerTable(){
 	
 	var t = $("#swiftList");
 	buildContainerTableHeader(t);
-	buildContainerTableContent(t);
+	buildContainerTableContent();
+
+		
+	$(window).off("scroll", scroll_object);
+	$(window).scroll(scroll_container);
+	
+	
 }
 
 function buildContainerTableHeader(table){
@@ -76,8 +85,55 @@ function buildContainerTableHeader(table){
 	table.append(hr);
 }
 
-function buildContainerTableContent(table){
-	$.get("/swift/containers").success(function(data){
+function buildContainerTableContent(){ 
+  
+   $.get("/swift/containers", {marker: currentContainerPageMarker}).success(function(data){
+		document.getElementById("demo").innerHTML = "All Containers Showed";
+		for (var i = 0 ; i < data.length ; i++) { 		
+		    
+			var row = $('<tr/>');
+			row.append($('<td/>').html(data[i].name));
+			row.append($('<td/>').html(fileSizeSI(data[i].bytes)));
+			row.append($('<td/>').html(data[i].count));
+			row.append($('<td/>')
+				.html('<input type="button" class="btn btn-info" value=">>>"/>')
+				.data("containerName", data[i].name)
+				.click(function() {enterContainer($(this))}));
+				
+			$("#swiftList").append(row);
+			currentContainerPageMarker = data[i].name;
+			document.getElementById("demo").innerHTML = "Loading Containers";
+		}
+	})
+}
+var containerName;
+function enterContainer(d){
+	containerName = d.data("containerName");
+	buildObjectTable(containerName);
+	
+}
+var scroll_container = function()
+	     { 
+		if($(window).scrollTop() + $(window).height() == $(document).height()) {
+			buildContainerTableContent();
+			console.log('scroll containers');
+			
+			
+		     if ( check == true) {
+			   document.getElementById("demo").innerHTML = "Loading Containers";   
+		    } else {
+			     document.getElementById("demo").innerHTML = "Finishing";
+	        } 
+			
+			
+		}
+
+
+}
+
+
+function NextPage(d){
+	$.get("/swift/containers/next").success(function(data){
 		
 		for (var i = 0 ; i < data.length ; i++) {
 			var row = $('<tr/>');
@@ -92,14 +148,11 @@ function buildContainerTableContent(table){
 			table.append(row);
 		}
 	})
-}
-var containerName;
-function enterContainer(d){
-	containerName = d.data("containerName");
-	buildObjectTable(containerName);
+
+	
+	
 	
 }
- 
 
 /*
  * *********************************************************************
@@ -107,7 +160,9 @@ function enterContainer(d){
  * object table stuff 
  * 
  */
+ var currentObjectPageMarker = '';
 function buildObjectTable(container){
+	currentObjectPageMarker = '';
 	$("#backBtn").show()
 	$("#createContainerDiv").hide()
 	$("#createContainerForm").hide()
@@ -122,7 +177,11 @@ function buildObjectTable(container){
 	
 	var t = $("#swiftList");
 	buildObjectTableHeader(t);
-	buildObjectTableContent(t, container);
+	buildObjectTableContent(container);
+	
+	
+	$(window).off("scroll", scroll_container);
+	$(window).scroll(scroll_object);
 }
 
 function buildObjectTableHeader(table){
@@ -141,8 +200,8 @@ function buildObjectTableHeader(table){
 var contName;
 var objName;
 
-function buildObjectTableContent(table, container){
-	$.get("/swift/containers/" + container + "/objects").success(function(data){
+function buildObjectTableContent(container){
+	$.get("/swift/containers/" + container + "/objects" , {marker: currentObjectPageMarker}).success(function(data){
 		
 		for (var i = 0 ; i < data.length ; i++) {
 			var row = $('<tr/>');
@@ -184,11 +243,19 @@ function buildObjectTableContent(table, container){
                             });
                        
                         }));
-			table.append(row);
+			$("#swiftList").append(row);
+			currentObjectPageMarker = data[i].name;
 		}
 	})
 	
 }
+
+var scroll_object = function() {
+		if($(window).scrollTop() + $(window).height() == $(document).height()) {
+			console.log('scroll objects');
+			buildObjectTableContent(container);
+		}
+	}
 
 var convData;
 function getMetadataDetails(containerName,objectName){

@@ -2,6 +2,8 @@
 	Project Bluebox
 	2015, University of Stuttgart, IPVS/AS
 """
+from _collections_abc import Iterator
+from itertools import count
 """ 
 	Project Bluebox 
 	
@@ -17,7 +19,11 @@ from SwiftConnect import SwiftConnect
 import json, logging, os, time, datetime
 import appConfig
 
+n = 0
 
+def set_globvar_to_one():
+    global n    # Needed to modify global copy of n(index)
+    n = n+ 6
 # initialize logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(module)s - %(levelname)s ##\t  %(message)s')
 log = logging.getLogger()
@@ -38,32 +44,68 @@ swift = SwiftConnect(appConfig.swift_type, appConfig.swift_url, appConfig.swift_
 def index():
 	return render_template('index.html')
 
+@app.route('/nextpage')
+def index2():
+	return render_template('index2.html')
 ##########################################################################################
 """
-	get the list of containers
+	get the list of containers , we get  value of marker from the front end (java script)
 """
 @app.route('/swift/containers', methods=['GET'])
 def getContainers():
-	cts = swift.containerList()
-	j = json.dumps(cts,sort_keys=True)
+	print("inside container list")
+	log.debug("inside container list")
+	m =request.args.get('marker','')
+	print(m)
+
+	ctss= swift.containerList(marker=m)
+
+	j = json.dumps(ctss,sort_keys=True)
 	return Response(j, mimetype='application/json')
-# 	return Response(j, mimetype='application/text')
+	
+		
+		
+		
+##########################################################################################
+##########################################################################################
+# """
+# 	get the list of containers
+# """
+# @app.route('/swift/Display', methods=['GET'])
+# def Display(ctss):
+# 	
+# 	j = json.dumps(ctss,sort_keys=True)
+# 	return Response(j, mimetype='application/json')
+
 ##########################################################################################
 ##########################################################################################
 """
-	get the list of containers limited
-"""
-@app.route('/swift/containers/<list>', methods=['GET'])
-def getContainerLimit(list):
-	list= int(list);
-	cts = swift.containerListLimit(list)
-	j = json.dumps(cts,sort_keys=True)
-	return Response(j, mimetype='application/json')
-# 	return Response(j, mimetype='application/text')
+# 	get the list of next containers 
+# """
+# @app.route('/swift/containers/next', methods=['GET'])
+# def getNextContainers():
+#  	
+#  	
+# 	print("hello")
+# 	print("hello")
+# 	cts= swift.containerList()
+# # 	mark=""
+# 	list=6
+# 	set_globvar_to_one()
+# 	print(n)
+# 	ctss= swift.containerListLimit(list,n)
+# 	
+# 	j = json.dumps(ctss,sort_keys=True)
+# 	return Response(j, mimetype='application/json')
+	
+  	
+  	
+ 	
 ##########################################################################################
 """
-	create the Container
+ create the Container
 """
+##########################################################################################
 
 @app.route('/create', methods=['POST'])
 def create():
@@ -78,9 +120,12 @@ def create():
 """
 @app.route('/swift/containers/<containerName>/objects', methods=['GET'])
 def getObjectsInContainer(containerName):
-	log.debug("getObjectsInContainer")
+	
+	n =request.args.get('marker','')
+	print('hallo ' + n)
+	log.debug(n)
 	log.debug(containerName)
-	cts = swift.fileList(containerName)
+	cts = swift.fileList(containerName,marker=n)
 	f = json.dumps(cts,sort_keys=True)
 	return Response(f, mimetype='application/json')
 
@@ -90,6 +135,8 @@ def getObjectsInContainer(containerName):
 """
 @app.route('/swift/containers/<containerName>/objects/<path:filename>/details', methods=['GET'])
 def getMetaDataInfo(containerName,filename):
+	
+	
 	log.debug("Get metadata information")
 	log.debug(containerName)
 	log.debug(filename)

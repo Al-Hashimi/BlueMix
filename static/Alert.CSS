@@ -23,6 +23,11 @@
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
+ .tile {
+    padding: 5px;
+    border: 1px solid white;
+}
+  
 }
 .alert-success {
   background-color: #dff0d8;
@@ -36,4 +41,18 @@
   color: #b94a48;
 }
 
-
+.pagination-page-info {
+    padding: .6em;
+    padding-left: 0;
+    width: 40em;
+    margin: .5em;
+    margin-left: 0;
+    font-size: 12px;
+}
+.pagination-page-info b {
+    color: black;
+    background: #6aa6ed;
+    padding-left: 2px;
+    padding: .1em .25em;
+    font-size: 150%;
+}

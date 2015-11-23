@@ -2,6 +2,7 @@
 	Project Bluebox
 	2015, University of Stuttgart, IPVS/AS
 """
+from itertools import count
 """ 
 	Project Bluebox 
 	
@@ -87,8 +88,9 @@ class SwiftConnect:
 			log.debug(containernames)
 			log.debug(filename)
 			obj_tuple = self.conn.get_object(containernames,filename)
-			log.debug(obj_tuple[1]) # index [1] returns the file
-			log.debug("Metadata")
+# 			log.debug(obj_tuple[1]) # index [1] returns the file
+			metadata=obj_tuple[0]
+			log.debug("Content Length is:{}".format(metadata["content-length"]))
 			log.debug(obj_tuple[0])
 			return obj_tuple[1]
 ################################################################################################       
@@ -113,34 +115,58 @@ class SwiftConnect:
 
 ####################################################################################################################################################
 #Creating an container list
-		def containerList(self):
+		def containerList(self, limit=8, marker=""):
  			
 			log.debug("container List")
-			containers = self.conn.get_account()[1]
+			containers = self.conn.get_account(marker=marker, limit=limit)[1]
 			for container  in containers:
 				log.debug(container ['name'])
  				
 			return containers                    
 #####################################################################################################################################################################################                                        
-        
+
 ####################################################################################################################################################
 #Creating an container list
-		def containerListLimit(self,list):
- 			
+		def containerListLimit(self,list,n):
+ 			#swift.conn.get_account(marker="Ali",limit=3)
 			log.debug("container List")
-			containers = self.conn.get_account(limit=list)[1]
+			
+			s = self.conn.get_account()[1][n]
+			toString = str(s)
+			toString.split(sep="name")
+			x1=toString.split(sep="name")[1]
+			inx1=x1.index(":")
+			inx2=x1.index(",")
+			mark=x1[inx1+3:inx2-1]
+			
+			containers = self.conn.get_account(limit=list,marker=mark)[1]
+			
 			for container  in containers:
 				log.debug(container ['name'])
  				
 			return containers                    
 #####################################################################################################################################################################################                                        
 
+####################################################################################################################################################
+#Creating an container list
+# 		def containerList(self):
+#  			#swift.conn.get_account(marker="Ali",limit=3)
+# 			log.debug("container List")
+# 			containers = self.conn.get_account()[1]
+# 			for container  in containers:
+# 				log.debug(container ['name'])
+#   				
+# 			return containers                    
+#####################################################################################################################################################################################                                        
+
+
+
 
 #Creating an container list
-		def fileList(self,containername):
+		def fileList(self,containername , limit=6, marker=""):
 			
 			log.debug("Files in a container")
-			files = self.conn.get_container(containername,full_listing=True)[1]
+			files = self.conn.get_container(containername,full_listing=False ,limit=limit,marker=marker)[1]
 			for file  in files:
 				log.debug('{0}\t{1}\t{2}'.format(file['name'], file['bytes'], file['last_modified']))   
 			return files                    
@@ -154,7 +180,7 @@ class SwiftConnect:
 			obj_tuple = self.conn.head_object(containernames,filename)
 			log.debug(obj_tuple)  # index [0] returns the Headers of the file
 			return obj_tuple
-################################################################################################    
+########################################### #####################################################    
 
 						
 #Closing the connection 

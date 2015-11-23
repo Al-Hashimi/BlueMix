@@ -20,3 +20,7 @@ swift_pw = "491185831573726b4cf3290255cb207bdcb0b2507cef940e9d12fb559a67"
 # swift_user = "test:tester"
 # swift_pw = "testing"
 
+# swift_type = "BluemixV1Auth"
+# swift_url = "https://swift.ng.bluemix.net/global_auth/781dedbe-2a7c-494e-ade4-242d6d548317/b71269e7-a07e-4757-9e71-969240995066"
+# swift_user = "5309352e515c91e7f3dbdf7ad43e82565bab22c6"
+# swift_pw = "f6f4bf77e7d4332fca8ed568ef3ecd4309d6f7f3e55ddfc417d89b055781"

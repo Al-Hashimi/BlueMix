@@ -17,22 +17,26 @@
 <head>
 	<link href="static/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="static/Alert.CSS">
+	<script type="text/javascript" src="/static/jquery-1.7.2.js"></script>
 	<script type="text/javascript" src="static/jquery.min.js"></script>  
 	<script type="text/javascript" src="static/bluebox.js"></script>
 	<script type="text/javascript" src="static/bootstrap.min.js"></script>
 	<script type="text/javascript" src="static/datepicker.css"></script>
 	<script type="text/javascript" src="static/jquery-ui.min"></script>
 	<script type="text/javascript" src="static/bootstrap-dialog.min"></script>
-	
-	
+    <script src="static/angular.min.js"></script>
+    <script src="static/ng-infinite-scroll.min.js"></script>
 	<script>
 	  $("#retentionDate").datepicker({
 		  changeMonth: true,
 		  changeYear: true
 	  });
 	 </script>
+
+	 
 </head>
 <body>
+
 <div class="container">
  <div class="form-group">
 		<div class="header">
@@ -48,6 +52,7 @@
 				<input type="submit" value="Create"  class="btn btn-success" id ="createBtn">
 			</form>
 			<div class="panel-heading" id = "uploadObjectDiv"><h3>Upload an object</h3></div>
+			
 			
 			<form action="/upload" method="post" id = "uploadObjectForm" name ="uploadObjectForm" enctype="multipart/form-data" target="dummyframe">
 				<label for="browseBtn" id = "browseLbl">Browse the file to upload:</label>
@@ -70,7 +75,7 @@
 	<table id="swiftList" class="table table-bordered table-hover " border="2">
 	</table>
 	</div>
-	<a href="index2.html"> Next Page </a> 
+	
 </div>
 <div class="alert alert-success" id="SuccessAlert">
 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -80,6 +85,14 @@
   </div>
 </div>
 <iframe width="0" height="0" border="0" id="dummyframe" name="dummyframe"></iframe>
+
+<p id="demo"></p>
+
+ 
+
+
+    
+    
 </body>
 </html>
  
