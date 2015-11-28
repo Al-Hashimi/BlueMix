@@ -83,7 +83,7 @@ class SwiftConnect:
 		
 #####################################################################################################################################################################################        
 #Retrieving an object 
-		def getObject(self,containernames,filename):
+		def getObject(self,containernames,filename,abc):
 			log.debug("Inside get object")
 			log.debug(containernames)
 			log.debug(filename)

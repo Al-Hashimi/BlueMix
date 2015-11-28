@@ -4,6 +4,7 @@
 """
 from _collections_abc import Iterator
 from itertools import count
+import abc
 """ 
 	Project Bluebox 
 	
@@ -122,7 +123,7 @@ def create():
 def getObjectsInContainer(containerName):
 	
 	n =request.args.get('marker','')
-	print('hallo ' + n)
+	print('hallo ' +n);
 	log.debug(n)
 	log.debug(containerName)
 	cts = swift.fileList(containerName,marker=n)
@@ -188,6 +189,7 @@ def upload():
 """
 @app.route('/swift/containers/<containerName>/objects/<path:filename>', methods=['GET'])
 def downloadObject(containerName, filename):
+		
 		log.debug("downloadObject: %s - %s" % (containerName, filename))
 		encodedOutputFile = swift.getObject(containerName,filename)
 		return Response(encodedOutputFile, mimetype='application/octet-stream')

@@ -47,10 +47,8 @@ function clearSwiftTable(){
  * container table stuff 
  * 
  */
-// var check  ;
- var currentContainerPageMarker = '';
+ var currentPageMarker = '';
 function buildContainerTable(){
-	currentContainerPageMarker = '';
 	$("#backBtn").hide()
 	$("#createContainerDiv").show()
 	$("#createContainerForm").show()
@@ -66,12 +64,13 @@ function buildContainerTable(){
 	
 	var t = $("#swiftList");
 	buildContainerTableHeader(t);
-	buildContainerTableContent();
-
-		
-	$(window).off("scroll", scroll_object);
-	$(window).scroll(scroll_container);
+	buildContainerTableContent(t);
 	
+	$(window).scroll(function() {
+		if($(window).scrollTop() + $(window).height() == $(document).height()) {
+			buildContainerTableContent(t);
+		}
+	})
 	
 }
 
@@ -85,12 +84,10 @@ function buildContainerTableHeader(table){
 	table.append(hr);
 }
 
-function buildContainerTableContent(){ 
-  
-   $.get("/swift/containers", {marker: currentContainerPageMarker}).success(function(data){
+function buildContainerTableContent(table){
+	$.get("/swift/containers", {marker: currentPageMarker}).success(function(data){
 		document.getElementById("demo").innerHTML = "All Containers Showed";
-		for (var i = 0 ; i < data.length ; i++) { 		
-		    
+		for (var i = 0 ; i < data.length ; i++) {
 			var row = $('<tr/>');
 			row.append($('<td/>').html(data[i].name));
 			row.append($('<td/>').html(fileSizeSI(data[i].bytes)));
@@ -100,8 +97,8 @@ function buildContainerTableContent(){
 				.data("containerName", data[i].name)
 				.click(function() {enterContainer($(this))}));
 				
-			$("#swiftList").append(row);
-			currentContainerPageMarker = data[i].name;
+			table.append(row);
+			currentPageMarker = data[i].name;
 			document.getElementById("demo").innerHTML = "Loading Containers";
 		}
 	})
@@ -112,25 +109,6 @@ function enterContainer(d){
 	buildObjectTable(containerName);
 	
 }
-var scroll_container = function()
-	     { 
-		if($(window).scrollTop() + $(window).height() == $(document).height()) {
-			buildContainerTableContent();
-			console.log('scroll containers');
-			
-			
-		     if ( check == true) {
-			   document.getElementById("demo").innerHTML = "Loading Containers";   
-		    } else {
-			     document.getElementById("demo").innerHTML = "Finishing";
-	        } 
-			
-			
-		}
-
-
-}
-
 
 function NextPage(d){
 	$.get("/swift/containers/next").success(function(data){
@@ -160,9 +138,7 @@ function NextPage(d){
  * object table stuff 
  * 
  */
- var currentObjectPageMarker = '';
 function buildObjectTable(container){
-	currentObjectPageMarker = '';
 	$("#backBtn").show()
 	$("#createContainerDiv").hide()
 	$("#createContainerForm").hide()
@@ -177,11 +153,13 @@ function buildObjectTable(container){
 	
 	var t = $("#swiftList");
 	buildObjectTableHeader(t);
-	buildObjectTableContent(container);
+	buildObjectTableContent(t, container);
 	
-	
-	$(window).off("scroll", scroll_container);
-	$(window).scroll(scroll_object);
+	$(window).scroll(function() {
+		if($(window).scrollTop() + $(window).height() == $(document).height()) {
+			buildObjectTableContent(t , container);
+		}
+	})
 }
 
 function buildObjectTableHeader(table){
@@ -200,9 +178,9 @@ function buildObjectTableHeader(table){
 var contName;
 var objName;
 
-function buildObjectTableContent(container){
-	$.get("/swift/containers/" + container + "/objects" , {marker: currentObjectPageMarker}).success(function(data){
-		
+function buildObjectTableContent(table, container){
+	$.get("/swift/containers/" + container + "/objects", {marker: currentPageMarker}).success(function(data){
+		document.getElementById("demo").innerHTML = "All Objects Showed";
 		for (var i = 0 ; i < data.length ; i++) {
 			var row = $('<tr/>');
 			row.append($('<td/>').html(data[i].name));
@@ -243,19 +221,13 @@ function buildObjectTableContent(container){
                             });
                        
                         }));
-			$("#swiftList").append(row);
-			currentObjectPageMarker = data[i].name;
+			table.append(row);
+			currentPageMarker = data[i].name;
+			document.getElementById("demo").innerHTML = "Loading Objects";
 		}
 	})
 	
 }
-
-var scroll_object = function() {
-		if($(window).scrollTop() + $(window).height() == $(document).height()) {
-			console.log('scroll objects');
-			buildObjectTableContent(container);
-		}
-	}
 
 var convData;
 function getMetadataDetails(containerName,objectName){
