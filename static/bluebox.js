@@ -48,7 +48,8 @@ function clearSwiftTable(){
  * 
  */
  var currentPageMarker = '';
-function buildContainerTable(){
+ var currentPageObjectMarker = '';
+function buildContainerTable(){ currentPageMarker = '';
 	$("#backBtn").hide()
 	$("#createContainerDiv").show()
 	$("#createContainerForm").show()
@@ -87,6 +88,7 @@ function buildContainerTableHeader(table){
 function buildContainerTableContent(table){
 	$.get("/swift/containers", {marker: currentPageMarker}).success(function(data){
 		document.getElementById("demo").innerHTML = "All Containers Showed";
+		
 		for (var i = 0 ; i < data.length ; i++) {
 			var row = $('<tr/>');
 			row.append($('<td/>').html(data[i].name));
@@ -103,6 +105,7 @@ function buildContainerTableContent(table){
 		}
 	})
 }
+
 var containerName;
 function enterContainer(d){
 	containerName = d.data("containerName");
@@ -179,7 +182,7 @@ var contName;
 var objName;
 
 function buildObjectTableContent(table, container){
-	$.get("/swift/containers/" + container + "/objects", {marker: currentPageMarker}).success(function(data){
+	$.get("/swift/containers/" + container + "/objects", {marker: currentPageObjectMarker}).success(function(data){
 		document.getElementById("demo").innerHTML = "All Objects Showed";
 		for (var i = 0 ; i < data.length ; i++) {
 			var row = $('<tr/>');
@@ -222,7 +225,7 @@ function buildObjectTableContent(table, container){
                        
                         }));
 			table.append(row);
-			currentPageMarker = data[i].name;
+			currentPageObjectMarker = data[i].name;
 			document.getElementById("demo").innerHTML = "Loading Objects";
 		}
 	})

@@ -130,10 +130,19 @@ def getObjectsInContainer(containerName):
 	f = json.dumps(cts,sort_keys=True)
 	return Response(f, mimetype='application/json')
 
+"""
+	parse objects size 
+"""
+def parseObjects(container):
+	
+	x = swift.ObjectList(container);
+	
+	log.debug(x)  
+	print("inside container list22")
+
+
+	
 ##########################################################################################
-"""
-	get the list of metadata information of all objects in a container
-"""
 @app.route('/swift/containers/<containerName>/objects/<path:filename>/details', methods=['GET'])
 def getMetaDataInfo(containerName,filename):
 	
@@ -163,6 +172,7 @@ def upload():
 		inputFileName = secure_filename(inputFile.filename)
 		log.debug(inputFileName)
 		inputFileContent = inputFile.read()
+		print("hjdgkjdgffhgkdsjh",inputFileContent)
 		log.debug(inputFileContent)
 		folderName = request.form['containerNameUp']
 		log.debug(folderName)
@@ -178,8 +188,9 @@ def upload():
 		h = dict()
 		h["X-Object-Meta-RetentionTime"] = retentimestamp
 		h["X-Object-Meta-OwnerName"] = request.form['OwnerName']
-		swift.createObject(inputFileName,inputFileContent,folderName,h)
+		swift.createObject(inputFileName,inputFileContent,folderName,h,chunk_size=10)
 		encodedoutputFileContent = swift.retrieveObject(folderName,inputFileName)
+		
 	return Response(None)
 			
 		
@@ -191,7 +202,7 @@ def upload():
 def downloadObject(containerName, filename):
 		
 		log.debug("downloadObject: %s - %s" % (containerName, filename))
-		encodedOutputFile = swift.getObject(containerName,filename)
+		encodedOutputFile = swift.getObject(containerName,filename,resp_chunk_size=10)
 		return Response(encodedOutputFile, mimetype='application/octet-stream')
 ##########################################################################################
 def calcTimeDifference(timestamp):

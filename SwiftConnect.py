@@ -67,10 +67,14 @@ class SwiftConnect:
 #####################################################################################################################################################################################
 
 #Creating an object
-		def createObject(self,fileName,fileContent,folderName,metadataDict):
+		def createObject(self,fileName,fileContent,folderName,metadataDict,content_length,chunk_size):
 			log.debug(fileName)
 			log.debug("Inside create Object")
-			self.conn.put_object(container=folderName, obj= fileName, contents= fileContent,headers=metadataDict)
+			test=self.conn.put_object(container=folderName, obj= fileName, contents= fileContent,headers=metadataDict,chunk_size=10)
+			log.debug=(test)
+			
+			
+			
 			
 #####################################################################################################################################################################################                                        
 
@@ -83,16 +87,26 @@ class SwiftConnect:
 		
 #####################################################################################################################################################################################        
 #Retrieving an object 
-		def getObject(self,containernames,filename,abc):
+		def getObject(self,containernames,filename,resp_chunk_size):
 			log.debug("Inside get object")
 			log.debug(containernames)
 			log.debug(filename)
-			obj_tuple = self.conn.get_object(containernames,filename)
+			obj_tuple, body = self.conn.get_object(containernames,filename,resp_chunk_size)
+			
+			downloaded_contents=b''
+			while True:
+				try:
+					chunk = next(body)
+					log.debug(chunk)
+				except StopIteration:
+					break
+				downloaded_contents=downloaded_contents+chunk
+				log.debug(len(downloaded_contents))
 # 			log.debug(obj_tuple[1]) # index [1] returns the file
-			metadata=obj_tuple[0]
-			log.debug("Content Length is:{}".format(metadata["content-length"]))
-			log.debug(obj_tuple[0])
-			return obj_tuple[1]
+# 			metadata=obj_tuple[0]
+# 			log.debug("Content Length is:{}".format(metadata["content-length"]))
+# 			log.debug(obj_tuple[0])
+			return downloaded_contents[1]
 ################################################################################################       
 
 #deleting an object 
@@ -172,6 +186,22 @@ class SwiftConnect:
 			return files                    
 #####################################################################################################################################################################################                                        
 #####################################################################################################################################################################################        
+
+#Get
+		def ObjectList(self,containername):
+			
+			log.debug("Files in a container")
+			objects = self.conn.get_container(containername)[1]
+			for object  in objects:
+				log.debug('t{1}'.format( object['bytes']))  
+				
+				 
+			return objects  
+
+
+
+########################################### #####################################################    
+
 #Retrieving an object Metadata 
 		def getObjMetaData(self,containernames,filename):
 			log.debug("Inside get object")
